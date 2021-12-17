@@ -61,14 +61,14 @@
 - [6.4 초대의 글](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/Chapter06/6-4.md)
 - [6.5 책을 마무리하며](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/Chapter06/6-5.md)
 ## Appendix A
-- [용어정리](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixA/README.md)
+- [부록 A:용어정리](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixA/README.md)
 ## Appendix B
-- [표기법 가이드](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixB/README.md)
+- [부록 B:표기법 가이드](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixB/README.md)
 - [B.1 클래스 다이어그램](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixB/B-1.md)
 - [B.2 객체 다이어그램](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixB/B-2.md)
 - [B.3 상호작용 다이어그램](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixB/B-3.md)
 ## Appendix C
-- [예제 코드에 사용된 기본 클래스](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixC/README.md)
+- [부록 C:예제 코드에 사용된 기본 클래스](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixC/README.md)
 - [C.1 List](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixC/C-1.md)
 - [C.2 Iterator](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixC/C-2.md)
 - [C.3 ListIterator](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixC/C-3.md)

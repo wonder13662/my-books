@@ -76,3 +76,8 @@
 - [C.5 Rect](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixC/C-5.md)
 ## 참고문헌
 - [참고문헌](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/References/README.md)
+## Index
+- [믹스인(mixin) 클래스]()
+- [동적 바인딩]()
+- [다형성]()
+- [클래스 상속과 인터페이스 상속(혹은 서브타이핑)의 차이]()

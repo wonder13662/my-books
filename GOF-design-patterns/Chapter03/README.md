@@ -50,5 +50,104 @@ class Room : public MapSite {
     // 방은 네 개의 방향을 갖고 있고
     // 각 방향에는 MapSite의 서브클래스 인스턴스가 올 수 있습니다.
     MapSite* _sides[4];
+    int _roomNumber;
 }
 ```
+다음 클래스는 방의 각 측면에 있을 수 있는 문과 벽을 보여줍니다.
+```c++
+class Wall : public MapSite {
+  public:
+    Wall();
+    virtual void Enter();
+}
+
+class Door : public MapSite {
+  public:
+    Door(Room* = 0, Room* = 0);
+    // 문을 초기화하기 위해서는 문이 어느 방 사이에 있는지 알아햐 합니다.
+    virtual void Enter();
+    Room* OtherSideFrom(Room*);
+  private:
+    Room* _room1;
+    Room* _room2;
+    bool _isOpen;
+}
+```
+미로를 복합하는 요소에 대해서는 좀 더 살펴봐야 합니다. 또한 방들의 집합을 표현하기 위해 클래스 `Maze`를 정의하겠습니다. `Maze`는 `RoomNo()` 연산의 힘을 빌어서 방 번호가 주어진 특정 방을 찾을 수도 있습니다.
+```c++
+class Maze {
+  public:
+    Maze();
+
+    void AddRoom(Room*);
+    Room* RoomNo(int) const;
+  private:
+    // ...
+}
+```
+`RoomNo()` 연산은 선형 탐색이나 해시 테이블 또는 단순 배열을 통해서 구현할 수 있습니다. 그러나 이 책에서 이런 부분은 별로 중요하지 않으므로 다루지 않을 것이고, 그 대신 미로 객체의 구성요소를 어떻게 설정하느냐에 집중하려고 합니다.
+
+다른 필요한 클래스로는 `MazeGame`이 있습니다. 실제로 미로를 생성하는 클래스입니다. 미로를 생성하는 가장 간단하고 일반적인 방법은 일련의 연산을 통해 빈 미로에 미로의 구성요소를 추가하고 이들을 연결하는 것 입니다. 예를 들어, 다음에서 멤버 함수 `CreateMaze()`는 방 사이에 문이 있는 두 개의 방으로 구성된 미로를 만듭니다.
+```c++
+Maze* MazeGame::CreateMaze () {
+  Maze* aMaze = new Maze;
+  Room* r1 = new Room(1);
+  Room* r2 = new Room(2);
+  Door* theDoor = new Door(r1, r2);
+
+  aMaze->AddRoom(r1);
+  aMaze->AddRoom(r2);
+
+  r1->SetSide(North, new Wall);
+  r1->SetSide(East, theDoor);
+  r1->SetSide(South, new Wall);
+  r1->SetSide(West, new Wall);
+
+  r2->SetSide(North, new Wall);
+  r2->SetSide(East, new Wall);
+  r2->SetSide(South, new Wall);
+  r2->SetSide(West, theDoor);
+
+  return aMaze;
+}
+```
+즉, 일련의 연산을 통해 방을 만들고 방 사이에 문을 다는 것입니다. 이 함수는 약간 복잡해 보이긴 합니다. 겨우 방 두 개를 만든 것 뿐인데 말이죠. 좀 더 간단한 구현 방법이 분명히 있을 수 있습니다. 예를 들어, `Room` 클래스의 생성자에서 모든 방향의 면(slide)들을 벽(wall)으로 초기화해두었다면 방의 모든 면을 세팅하는 코드는 `CreateMaze()`에서 없앨 수 있습니다.
+```diff
+Maze* MazeGame::CreateMaze () {
+  Maze* aMaze = new Maze;
+  Room* r1 = new Room(1);
+  Room* r2 = new Room(2);
+  Door* theDoor = new Door(r1, r2);
+
+  aMaze->AddRoom(r1);
+  aMaze->AddRoom(r2);
+
+- r1->SetSide(North, new Wall);
+  r1->SetSide(East, theDoor);
+- r1->SetSide(South, new Wall);
+- r1->SetSide(West, new Wall);
+
+- r2->SetSide(North, new Wall);
+- r2->SetSide(East, new Wall);
+- r2->SetSide(South, new Wall);
+  r2->SetSide(West, theDoor);
+
+  return aMaze;
+}
+```
+즉, 위와 같은 코드는 필요없게 됩니다. 다시 말해, `Room` 클래스의 생성자에서 이런 일은 처리하고 단지 다음과 같이 변경되는 부분만 코드화하면 됩니다.
+
+그러나 앞의 `CreateMaze()` 코드가 가지고 있는 진짜 문제는 코드의 라인 수가 많다는 것이 아니고 코드의 **유연성이 떨어진다**는 것입니다. 여기서는 방의 레이아웃이 하드코딩되어 있습니다. 즉, 레이아웃을 바꾸고 싶으면 멤버 함수를 바꾸는 수밖에 없습니다. 이 함수를 오버라이드하든지(전체를 재구현하는 거죠) 이 함수으 일부를 바꾸든지(오류 가능성이 높은데다가 재사용성에 도움이 안되는 일입니다) 말이죠.
+
+생성 패턴은 이런 상황에서 어떻게 **유연한** 설계를 할 수 있는지에 대한 해법을 제공합니다. 특히 미로의 구성요소를 정의하는 클래스를 쉽게 변경할 수 있는 방법을 제공합니다.
+
+기존 미로가 갖고 있는 레이아웃을 재사용하면서 마법 주문이 걸린 미로가 있는 게임을 만들고 싶다고 가정해 봅시다. 이 마법의 미로 게임을 만들기 위해서는 단어를 맞추면 문이 열리는 `DoorNeedingSpell`이라든지, 마법 키나 단어 등 특별한 항목을 포함하는 `EnchantedRoom`과 같은 새로운 구성요소가 필요합니다. 어떻게 하면 `CreateMaze()` 함수를 쉽게 바꿔 이런 것들이 달린 미로를 만들 수 있을까요?
+
+지금 시점에서 가장 큰 장애 요인은 클래스들의 인스턴스를 직접 생성하도록 하드 코딩한다는 점입니다. 생성 패턴은 이런 어려움을 이길 수 있는 여러가지 방법을 제공합니다.
+
+- `CreateMaze`가 방, 벽, 문을 생성하기 위해서 생성자를 이용하지 않고 가상 함수를 호출하도록 구현되어 있다면, 이 가상 함수의 실제 구현을 다양한 방법으로 변경할 수 있을 것입니다. 이 방법은 [팩토리 메서드(Factory Method)](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/Chapter02/3-1.md) 패턴의 한 예입니다.
+- `CreateMaze`가 방, 벽, 문을 생성하기 위해 생성 방법을 알고 있는 객체를 매개변수로 넘겨 받을 수 있다면, 생성 방법이 바뀔 때마다 새로운 매개변수를 넘겨받음으로써 생성할 객체의 유형을 달리할 수 있습니다. 이는 [추상 팩토리(Abstract Factory)](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/Chapter02/3-2.md) 패턴의 한 예입니다.
+- `CreateMaze`가 생성하고자 하는 미로에 방, 문, 벽을 추가하는 연산을 사용해서 새로운 미로를 만들 수 있는 객체를 넘겨받는다면 미로를 만드는 방법이나 변경을 이 객체의 상속을 통해서 해결할 수 있습니다. 이는 [빌더(Builder)](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/Chapter02/3-3.md) 패턴의 예입니다.
+- `CreateMaze`가 이미 만든 다양한 방, 문, 벽 객체로 매개변수화하는 방법도 가능한데, 이미 만든 객체를 복사해서 미로에 추가하면, 이들 인스턴스를 교체하여 미로의 복합 방법을 변경할 수 있습니다. 이는 [원형(Prototype)](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/Chapter02/3-4.md) 패턴의 예입니다.
+
+다섯 개 생성 패턴 중에서 위에 쓰지 않은 [단일체(Singleton)](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/Chapter02/3-5.md) 패턴이란 것이 있습니다. 이 패턴은 한 게임에 오로지 하나의 미로 객체만 존재할 수 있고 그 게임에서 돌아가는 모든 게임 객체들이 이 미로에 접근이 가능하도록 보장합니다. 전역 변수나 전역 함수에 의존할 필요 없이 이런 일이 가능합니다. 또한 단일체 패턴은 기존 코드를 건드리지 않고도 미로를 쉽게 대체하거나 확장할 수 있도록 해 줍니다.

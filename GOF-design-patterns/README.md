@@ -76,6 +76,7 @@
 - [C.5 Rect](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/AppendixC/C-5.md)
 ## 참고문헌
 - [참고문헌](https://github.com/wonder13662/my-books/blob/writing/GOF-design-patterns/References/README.md)
+- [영문판 온라인버전 Chapter 2](https://www.cs.unc.edu/~stotts/GOF/hires/chap2.htm)
 ## Index
 - [믹스인(mixin) 클래스]()
 - [동적 바인딩]()
